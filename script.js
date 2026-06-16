@@ -1,75 +1,333 @@
 let selectedIncident = null;
 let harmfulAnswer = null;
 
+const incidentList = document.getElementById("incidentList");
+const searchInput = document.getElementById("search");
 const severitySlider = document.getElementById("severity");
 const severityValue = document.getElementById("severityValue");
 const resultBox = document.getElementById("result");
+
+const repeatOffense = document.getElementById("repeatOffense");
+const newChatter = document.getElementById("newChatter");
+const streamerEscalation = document.getElementById("streamerEscalation");
+
+function renderIncidentList(list = incidents) {
+  incidentList.innerHTML = "";
+
+  if (list.length === 0) {
+    incidentList.innerHTML = `
+      <p class="helper-text">
+        No matching incident found. Try a broader word like “spam,” “raid,” or “promo.”
+      </p>
+    `;
+    return;
+  }
+
+  list.forEach((incident) => {
+    const btn = document.createElement("button");
+
+    btn.className = `incident-card border-${incident.color}`;
+
+    if (selectedIncident && selectedIncident.id === incident.id) {
+      btn.classList.add("selected");
+    }
+
+    btn.innerHTML = `
+      <strong>${incident.title}</strong>
+      <small>${incident.category} • Suggested severity ${incident.severity}</small>
+    `;
+
+    btn.addEventListener("click", () => {
+      selectedIncident = incident;
+
+      severitySlider.value = incident.severity;
+      severityValue.textContent = incident.severity;
+
+      renderIncidentList(getFilteredIncidents());
+      showIncidentDetails(incident);
+    });
+
+    incidentList.appendChild(btn);
+  });
+}
+
+function getFilteredIncidents() {
+  const query = searchInput.value.toLowerCase().trim();
+
+  if (!query) {
+    return incidents;
+  }
+
+  return incidents.filter((incident) => {
+    const searchable = [
+      incident.title,
+      incident.category,
+      incident.keywords.join(" "),
+      incident.examples.join(" "),
+      incident.signs.join(" "),
+      incident.actions.join(" ")
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return searchable.includes(query);
+  });
+}
+
+function listItems(items) {
+  return items.map((item) => `<li>${item}</li>`).join("");
+}
+
+function badgeClass(color) {
+  return `badge badge-${color}`;
+}
+
+function showIncidentDetails(incident) {
+  resultBox.className = "result-card";
+
+  resultBox.innerHTML = `
+    <span class="${badgeClass(incident.color)}">
+      ${incident.category}
+    </span>
+
+    <h3>${incident.title}</h3>
+
+    <h4>Examples</h4>
+    <ul>${listItems(incident.examples)}</ul>
+
+    <h4>Common Signs</h4>
+    <ul>${listItems(incident.signs)}</ul>
+
+    <h4>Recommended Actions</h4>
+    <ul>${listItems(incident.actions)}</ul>
+
+    <h4>Useful Command</h4>
+    <code>${incident.command}</code>
+
+    <h4>Beginner Tip</h4>
+    <p>${incident.beginnerTip}</p>
+  `;
+}
+
+function recommendationName(level) {
+  if (level <= 1) {
+    return "Warn / Redirect";
+  }
+
+  if (level === 2) {
+    return "Delete Message / Monitor";
+  }
+
+  if (level === 3) {
+    return "Timeout";
+  }
+
+  return "Ban + Escalate";
+}
+
+function recommendationCommand(level, incident) {
+  if (incident && incident.command) {
+    return incident.command;
+  }
+
+  if (level <= 1) {
+    return "Friendly reminder in chat";
+  }
+
+  if (level === 2) {
+    return "/delete <message>";
+  }
+
+  if (level === 3) {
+    return "/timeout username 600";
+  }
+
+  return "/ban username";
+}
+
+function getWhy(level, incident) {
+  const reasons = [];
+
+  if (incident) {
+    reasons.push(
+      `${incident.title} is usually treated as severity ${incident.severity}.`
+    );
+  }
+
+  if (harmfulAnswer === "no") {
+    reasons.push(
+      "You marked the message as not harmful, so no punishment is needed."
+    );
+  }
+
+  if (harmfulAnswer === "maybe") {
+    reasons.push(
+      "You marked it as uncertain, so a measured response is safest."
+    );
+  }
+
+  if (harmfulAnswer === "yes") {
+    reasons.push(
+      "You marked it as harmful, so intervention is appropriate."
+    );
+  }
+
+  if (repeatOffense.checked) {
+    reasons.push("Repeated behavior increases the response level.");
+  }
+
+  if (newChatter.checked) {
+    reasons.push("A new or suspicious chatter may need closer monitoring.");
+  }
+
+  if (streamerEscalation.checked) {
+    reasons.push(
+      "You marked this as something the streamer/admin should know about."
+    );
+  }
+
+  return reasons;
+}
+
+function getFinalSeverity() {
+  let level = Number(severitySlider.value);
+
+  if (repeatOffense.checked) {
+    level += 1;
+  }
+
+  if (streamerEscalation.checked && level < 4) {
+    level += 1;
+  }
+
+  return Math.min(level, 4);
+}
 
 severitySlider.addEventListener("input", () => {
   severityValue.textContent = severitySlider.value;
 });
 
-document.querySelectorAll(".incident-btn").forEach(btn => {
+document.querySelectorAll(".decision").forEach((btn) => {
   btn.addEventListener("click", () => {
-    selectedIncident = btn.dataset.incident;
+    harmfulAnswer = btn.dataset.result;
+
+    document.querySelectorAll(".decision").forEach((b) => {
+      b.classList.remove("selected");
+    });
+
+    btn.classList.add("selected");
   });
 });
 
-document.querySelectorAll(".decision").forEach(btn => {
-  btn.addEventListener("click", () => {
-    harmfulAnswer = btn.dataset.result;
-  });
+searchInput.addEventListener("input", () => {
+  renderIncidentList(getFilteredIncidents());
 });
 
 document.getElementById("recommendBtn").addEventListener("click", () => {
-  const severity = Number(severitySlider.value);
-
   if (!selectedIncident) {
-    resultBox.innerHTML = "Select an incident first.";
+    resultBox.innerHTML = `
+      Select an incident first, or search for one above.
+    `;
     return;
   }
 
   if (harmfulAnswer === "no") {
     resultBox.innerHTML = `
-      <h3>IGNORE</h3>
-      <p>No action needed.</p>
+      <span class="badge badge-green">Low Risk</span>
+
+      <h3>Ignore / Observe</h3>
+
+      <p>
+        No action needed unless the behavior continues or starts disrupting chat.
+      </p>
+
+      <h4>Why this recommendation?</h4>
+      <ul>${listItems(getWhy(1, selectedIncident))}</ul>
     `;
     return;
   }
 
-  if (severity === 1) {
-    resultBox.innerHTML = `
-      <h3>WARN</h3>
-      <p>Give a gentle reminder. Great for beginners.</p>
-    `;
-  } else if (severity === 2) {
-    resultBox.innerHTML = `
-      <h3>DELETE MESSAGE</h3>
-      <p>Remove message and monitor user behavior.</p>
-    `;
-  } else if (severity === 3) {
-    resultBox.innerHTML = `
-      <h3>TIMEOUT</h3>
-      <p>Timeout user for 10 minutes.</p>
-      <code>/timeout username 600</code>
-    `;
-  } else {
-    resultBox.innerHTML = `
-      <h3>BAN + ESCALATE</h3>
-      <p>Critical incident. Alert streamer/admin.</p>
-      <code>/ban username</code>
-    `;
+  const finalSeverity = getFinalSeverity();
+  const name = recommendationName(finalSeverity);
+  const command = recommendationCommand(finalSeverity, selectedIncident);
+
+  let color = "yellow";
+
+  if (finalSeverity === 2 || finalSeverity === 3) {
+    color = "orange";
   }
+
+  if (finalSeverity === 4) {
+    color = "red";
+  }
+
+  resultBox.innerHTML = `
+    <span class="${badgeClass(color)}">
+      Severity ${finalSeverity}
+    </span>
+
+    <h3>${name}</h3>
+
+    <p>
+      <strong>Incident:</strong> ${selectedIncident.title}
+    </p>
+
+    <h4>Suggested command/action</h4>
+    <code>${command}</code>
+
+    <h4>What to do</h4>
+    <ul>${listItems(selectedIncident.actions)}</ul>
+
+    <h4>Why this recommendation?</h4>
+    <ul>${listItems(getWhy(finalSeverity, selectedIncident))}</ul>
+
+    <h4>Beginner Tip</h4>
+    <p>${selectedIncident.beginnerTip}</p>
+  `;
 });
 
 document.getElementById("panicBtn").addEventListener("click", () => {
+  resultBox.classList.add("panic-active");
+
   resultBox.innerHTML = `
-    <h2>PANIC MODE</h2>
-    <p>Recommended emergency actions:</p>
+    <span class="badge badge-red">Emergency</span>
+
+    <h2>Panic Mode</h2>
+
+    <p>
+      Use this for bot raids, hate raids, doxxing, or chat moving too fast to control.
+    </p>
+
+    <h4>Stabilize chat first</h4>
+
+    <code>/followers 10m
+/slow 30
+/emoteonly</code>
+
+    <h4>Then clean up</h4>
+
     <ul>
-      <li>/followers 10m</li>
-      <li>/slow 30</li>
-      <li>/emoteonly</li>
+      <li>Ban obvious bots or malicious accounts.</li>
+      <li>Tell the streamer/admin what happened.</li>
+      <li>Turn modes off once chat is safe again.</li>
     </ul>
   `;
 });
+
+const modal = document.getElementById("commandsModal");
+
+document.getElementById("commandsBtn").addEventListener("click", () => {
+  modal.classList.remove("hidden");
+});
+
+document.getElementById("closeCommands").addEventListener("click", () => {
+  modal.classList.add("hidden");
+});
+
+modal.addEventListener("click", (event) => {
+  if (event.target === modal) {
+    modal.classList.add("hidden");
+  }
+});
+
+renderIncidentList();
