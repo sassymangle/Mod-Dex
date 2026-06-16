@@ -434,3 +434,70 @@ label {
   }
 
 }
+/* =====================
+   EVIDENCE FILTERS
+===================== */
+
+.filter-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-bottom: 15px;
+}
+
+.filter-grid label {
+  background: var(--panel-light);
+
+  padding: 10px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.filter-grid label:hover {
+  background: #2f2f36;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.panel-divider {
+  border: none;
+
+  height: 1px;
+
+  background: #333;
+
+  margin: 20px 0;
+}
+
+/* =====================
+   LIKELIHOOD SCORES
+===================== */
+
+.likelihood {
+  display: inline-block;
+
+  margin-top: 6px;
+
+  font-size: 0.8rem;
+
+  font-weight: bold;
+}
+
+.likelihood-high {
+  color: var(--red);
+}
+
+.likelihood-medium {
+  color: var(--orange);
+}
+
+.likelihood-low {
+  color: var(--green);
+}
