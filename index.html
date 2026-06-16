@@ -34,14 +34,67 @@
   </header>
 
   <main class="layout">
-    <section class="panel left-panel">
-      <h2>Incident Types</h2>
-      <p class="helper-text">
-        Pick a situation, or use search above.
-      </p>
+<section class="panel left-panel">
+  <h2>Evidence Filters</h2>
+  <p class="helper-text">
+    Check what you see in chat. ModèDex will sort likely incidents.
+  </p>
 
-      <div id="incidentList" class="incident-list"></div>
-    </section>
+  <div class="filter-grid">
+    <label>
+      <input type="checkbox" class="evidence-filter" value="new-account" />
+      New account
+    </label>
+
+    <label>
+      <input type="checkbox" class="evidence-filter" value="repeat" />
+      Repeated behavior
+    </label>
+
+    <label>
+      <input type="checkbox" class="evidence-filter" value="spam-burst" />
+      Spam burst
+    </label>
+
+    <label>
+      <input type="checkbox" class="evidence-filter" value="personal-info" />
+      Personal info
+    </label>
+
+    <label>
+      <input type="checkbox" class="evidence-filter" value="threats" />
+      Threats
+    </label>
+
+    <label>
+      <input type="checkbox" class="evidence-filter" value="promo-links" />
+      Promo links
+    </label>
+
+    <label>
+      <input type="checkbox" class="evidence-filter" value="emotional-pressure" />
+      Emotional pressure
+    </label>
+
+    <label>
+      <input type="checkbox" class="evidence-filter" value="spoilers" />
+      Spoilers / backseating
+    </label>
+  </div>
+
+  <button id="clearFiltersBtn" class="secondary-btn full-width">
+    Clear Filters
+  </button>
+
+  <hr class="panel-divider" />
+
+  <h2>Incident Types</h2>
+  <p class="helper-text">
+    Results sort by likelihood.
+  </p>
+
+  <div id="incidentList" class="incident-list"></div>
+</section>
 
     <section class="panel center-panel">
       <h2>Decision Tree</h2>
