@@ -11,10 +11,76 @@ const repeatOffense = document.getElementById("repeatOffense");
 const newChatter = document.getElementById("newChatter");
 const streamerEscalation = document.getElementById("streamerEscalation");
 
+const evidenceFilters = document.querySelectorAll(".evidence-filter");
+const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+
+function getSelectedEvidence() {
+  return Array.from(evidenceFilters)
+    .filter((filter) => filter.checked)
+    .map((filter) => filter.value);
+}
+
+function scoreIncident(incident) {
+  const selectedEvidence = getSelectedEvidence();
+
+  if (selectedEvidence.length === 0) {
+    return 0;
+  }
+
+  const matchedEvidence = selectedEvidence.filter((item) =>
+    incident.evidence.includes(item)
+  );
+
+  return Math.round(
+    (matchedEvidence.length / selectedEvidence.length) * 100
+  );
+}
+
+function likelihoodLabel(score) {
+  if (score >= 75) {
+    return {
+      text: "High likelihood",
+      className: "likelihood likelihood-high"
+    };
+  }
+
+  if (score >= 40) {
+    return {
+      text: "Medium likelihood",
+      className: "likelihood likelihood-medium"
+    };
+  }
+
+  if (score > 0) {
+    return {
+      text: "Low likelihood",
+      className: "likelihood likelihood-low"
+    };
+  }
+
+  return {
+    text: "No evidence match",
+    className: "likelihood"
+  };
+}
+
 function renderIncidentList(list = incidents) {
   incidentList.innerHTML = "";
 
-  if (list.length === 0) {
+  const selectedEvidence = getSelectedEvidence();
+
+  let scoredList = list.map((incident) => {
+    return {
+      ...incident,
+      score: scoreIncident(incident)
+    };
+  });
+
+  if (selectedEvidence.length > 0) {
+    scoredList.sort((a, b) => b.score - a.score);
+  }
+
+  if (scoredList.length === 0) {
     incidentList.innerHTML = `
       <p class="helper-text">
         No matching incident found. Try a broader word like “spam,” “raid,” or “promo.”
@@ -23,7 +89,7 @@ function renderIncidentList(list = incidents) {
     return;
   }
 
-  list.forEach((incident) => {
+  scoredList.forEach((incident) => {
     const btn = document.createElement("button");
 
     btn.className = `incident-card border-${incident.color}`;
@@ -32,19 +98,28 @@ function renderIncidentList(list = incidents) {
       btn.classList.add("selected");
     }
 
+    const likelihood = likelihoodLabel(incident.score);
+
     btn.innerHTML = `
       <strong>${incident.title}</strong>
       <small>${incident.category} • Suggested severity ${incident.severity}</small>
+      ${
+        selectedEvidence.length > 0
+          ? `<span class="${likelihood.className}">
+              ${likelihood.text} • ${incident.score}%
+            </span>`
+          : ""
+      }
     `;
 
     btn.addEventListener("click", () => {
-      selectedIncident = incident;
+      selectedIncident = incidents.find((item) => item.id === incident.id);
 
-      severitySlider.value = incident.severity;
-      severityValue.textContent = incident.severity;
+      severitySlider.value = selectedIncident.severity;
+      severityValue.textContent = selectedIncident.severity;
 
       renderIncidentList(getFilteredIncidents());
-      showIncidentDetails(incident);
+      showIncidentDetails(selectedIncident);
     });
 
     incidentList.appendChild(btn);
@@ -82,8 +157,44 @@ function badgeClass(color) {
   return `badge badge-${color}`;
 }
 
+function getMatchedEvidence(incident) {
+  const selectedEvidence = getSelectedEvidence();
+
+  return selectedEvidence.filter((item) =>
+    incident.evidence.includes(item)
+  );
+}
+
+function getMissingEvidence(incident) {
+  const selectedEvidence = getSelectedEvidence();
+
+  return selectedEvidence.filter((item) =>
+    !incident.evidence.includes(item)
+  );
+}
+
+function formatEvidenceName(item) {
+  const labels = {
+    "new-account": "New account",
+    repeat: "Repeated behavior",
+    "spam-burst": "Spam burst",
+    "personal-info": "Personal info",
+    threats: "Threats",
+    "promo-links": "Promo links",
+    "emotional-pressure": "Emotional pressure",
+    spoilers: "Spoilers / backseating"
+  };
+
+  return labels[item] || item;
+}
+
 function showIncidentDetails(incident) {
   resultBox.className = "result-card";
+
+  const score = scoreIncident(incident);
+  const matchedEvidence = getMatchedEvidence(incident);
+  const missingEvidence = getMissingEvidence(incident);
+  const selectedEvidence = getSelectedEvidence();
 
   resultBox.innerHTML = `
     <span class="${badgeClass(incident.color)}">
@@ -91,6 +202,37 @@ function showIncidentDetails(incident) {
     </span>
 
     <h3>${incident.title}</h3>
+
+    ${
+      selectedEvidence.length > 0
+        ? `
+          <h4>Evidence Match</h4>
+          <p><strong>Likelihood:</strong> ${score}%</p>
+
+          <p><strong>Matched:</strong></p>
+          <ul>
+            ${
+              matchedEvidence.length > 0
+                ? matchedEvidence
+                    .map((item) => `<li>✓ ${formatEvidenceName(item)}</li>`)
+                    .join("")
+                : "<li>No matching evidence</li>"
+            }
+          </ul>
+
+          <p><strong>Missing / Not a Match:</strong></p>
+          <ul>
+            ${
+              missingEvidence.length > 0
+                ? missingEvidence
+                    .map((item) => `<li>✕ ${formatEvidenceName(item)}</li>`)
+                    .join("")
+                : "<li>No conflicting evidence</li>"
+            }
+          </ul>
+        `
+        : ""
+    }
 
     <h4>Examples</h4>
     <ul>${listItems(incident.examples)}</ul>
@@ -221,6 +363,28 @@ document.querySelectorAll(".decision").forEach((btn) => {
 
 searchInput.addEventListener("input", () => {
   renderIncidentList(getFilteredIncidents());
+});
+
+evidenceFilters.forEach((filter) => {
+  filter.addEventListener("change", () => {
+    renderIncidentList(getFilteredIncidents());
+
+    if (selectedIncident) {
+      showIncidentDetails(selectedIncident);
+    }
+  });
+});
+
+clearFiltersBtn.addEventListener("click", () => {
+  evidenceFilters.forEach((filter) => {
+    filter.checked = false;
+  });
+
+  renderIncidentList(getFilteredIncidents());
+
+  if (selectedIncident) {
+    showIncidentDetails(selectedIncident);
+  }
 });
 
 document.getElementById("recommendBtn").addEventListener("click", () => {
