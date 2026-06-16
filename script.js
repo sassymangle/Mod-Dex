@@ -520,54 +520,32 @@ document.addEventListener("click", async (event) => {
     event.target.textContent = "Copy failed";
   }
 });
-function renderPositiveMoments() {
-  const positiveList = document.getElementById("positiveList");
+];
+const positiveMoments = [
+  {
+    id: "big-raid",
+    title: "Big Incoming Raid",
+    category: "Community Moment",
+    priority: "high",
 
-  if (!positiveList || typeof positiveMoments === "undefined") {
-    return;
+    examples: [
+      "A streamer raids in with a large group",
+      "Chat suddenly gets active in a positive way",
+      "Streamer wants the raider recognized publicly"
+    ],
+
+    actions: [
+      "Welcome the raider and their community",
+      "Use Twitch’s built-in shoutout command",
+      "Encourage chat to check them out",
+      "Help keep chat readable if excitement spikes"
+    ],
+
+    command: "/shoutout username",
+
+    beginnerTip:
+      "Many streamers prefer the official Twitch /shoutout command for bigger raids because it creates a more visible shoutout."
   }
-
-  positiveList.innerHTML = "";
-
-  positiveMoments.forEach((moment) => {
-    const btn = document.createElement("button");
-
-    btn.className = "incident-card border-green";
-
-    btn.innerHTML = `
-      <strong>${moment.title}</strong>
-      <small>${moment.category} • ${moment.priority} priority</small>
-    `;
-
-    btn.addEventListener("click", () => {
-      resultBox.className = "result-card";
-
-      resultBox.innerHTML = `
-        <span class="badge badge-green">
-          ${moment.category}
-        </span>
-
-        <h3>${moment.title}</h3>
-
-        <h4>Examples</h4>
-        <ul>${listItems(moment.examples)}</ul>
-
-        <h4>Suggested Actions</h4>
-        <ul>${listItems(moment.actions)}</ul>
-
-        <h4>Useful Command</h4>
-        <code>${moment.command}</code>
-        <button class="copy-btn" data-copy="${moment.command}">
-          Copy Command
-        </button>
-
-        <h4>Beginner Tip</h4>
-        <p>${moment.beginnerTip}</p>
-      `;
-    });
-
-    positiveList.appendChild(btn);
-  });
-}
+];
 renderIncidentList();
 renderPositiveMoments();
