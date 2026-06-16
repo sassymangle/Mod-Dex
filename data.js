@@ -403,3 +403,101 @@ const incidents = [
       "Always follow the streamer's preference on backseating."
   }
 ];
+const positiveMoments = [
+  {
+    id: "big-raid",
+    title: "Big Incoming Raid",
+    category: "Community Moment",
+    priority: "high",
+
+    examples: [
+      "A streamer raids in with a large group",
+      "Chat suddenly gets active in a positive way",
+      "Streamer wants the raider recognized publicly"
+    ],
+
+    actions: [
+      "Welcome the raider and their community",
+      "Use Twitch’s built-in shoutout command",
+      "Encourage chat to check them out",
+      "Help keep chat readable if excitement spikes"
+    ],
+
+    command: "/shoutout username",
+
+    beginnerTip:
+      "Many streamers prefer the official Twitch /shoutout command for bigger raids because it creates a more visible shoutout."
+  },
+
+  {
+    id: "small-shoutout",
+    title: "Small Friendly Shoutout",
+    category: "Community Moment",
+    priority: "medium",
+
+    examples: [
+      "A familiar streamer stops by",
+      "A smaller creator is mentioned",
+      "Streamer wants a quick friendly shoutout"
+    ],
+
+    actions: [
+      "Use the channel’s custom shoutout command if available",
+      "Keep it casual",
+      "Avoid overdoing shoutouts during busy moments"
+    ],
+
+    command: "!so username",
+
+    beginnerTip:
+      "Many channels save custom bot commands like !so for smaller or casual shoutouts."
+  },
+
+  {
+    id: "first-time-chatter",
+    title: "First-Time Chatter",
+    category: "Welcoming",
+    priority: "medium",
+
+    examples: [
+      "Someone says it is their first time here",
+      "A new chatter asks a normal question",
+      "A lurker finally joins chat"
+    ],
+
+    actions: [
+      "Welcome them warmly",
+      "Point them to rules if needed",
+      "Avoid overwhelming them with too much attention"
+    ],
+
+    command: "Welcome in! Glad to have you here.",
+
+    beginnerTip:
+      "A friendly welcome helps set the tone, but do not make new chatters feel put on the spot."
+  },
+
+  {
+    id: "hype-moment",
+    title: "Hype Moment",
+    category: "Community Energy",
+    priority: "low",
+
+    examples: [
+      "Streamer wins a match",
+      "Chat celebrates a funny or exciting moment",
+      "Lots of emotes appear at once"
+    ],
+
+    actions: [
+      "Let chat celebrate",
+      "Avoid moderating normal excitement too quickly",
+      "Step in only if it becomes unreadable or disruptive"
+    ],
+
+    command: "No command needed",
+
+    beginnerTip:
+      "Not every burst of emotes is spam. Sometimes the right mod action is no action."
+  }
+];
