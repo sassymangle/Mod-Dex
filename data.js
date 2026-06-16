@@ -6,6 +6,11 @@ const incidents = [
     severity: 1,
     color: "yellow",
 
+    evidence: [
+  "spam-burst",
+  "repeat"
+    ],
+
     keywords: [
       "spam",
       "caps",
@@ -46,6 +51,11 @@ const incidents = [
     severity: 3,
     color: "orange",
 
+    evidence: [
+  "repeat",
+  "threats"
+    ],
+
     keywords: [
       "harassment",
       "bullying",
@@ -84,6 +94,11 @@ const incidents = [
     category: "Critical Safety",
     severity: 4,
     color: "red",
+
+    evidence: [
+  "threats",
+  "repeat"
+    ],
 
     keywords: [
       "slur",
@@ -125,6 +140,11 @@ const incidents = [
     severity: 2,
     color: "orange",
 
+    evidence: [
+  "emotional-pressure",
+  "repeat"
+    ],
+
     keywords: [
       "trauma",
       "crisis",
@@ -163,6 +183,12 @@ const incidents = [
     category: "Emergency",
     severity: 4,
     color: "red",
+
+    evidence: [
+  "new-account",
+  "spam-burst",
+  "repeat"
+    ],
 
     keywords: [
       "raid",
@@ -207,6 +233,11 @@ const incidents = [
     severity: 4,
     color: "red",
 
+    evidence: [
+  "personal-info",
+  "threats"
+    ],
+
     keywords: [
       "doxxing",
       "address",
@@ -245,6 +276,12 @@ const incidents = [
     category: "Etiquette",
     severity: 1,
     color: "yellow",
+
+    evidence: [
+  "promo-links",
+  "repeat",
+  "new-account"
+    ],
 
     keywords: [
       "self promo",
@@ -285,6 +322,11 @@ const incidents = [
     severity: 2,
     color: "orange",
 
+    evidence: [
+  "emotional-pressure",
+  "repeat"
+    ],
+
     keywords: [
       "parasocial",
       "boundary",
@@ -323,6 +365,11 @@ const incidents = [
     category: "Gameplay Etiquette",
     severity: 1,
     color: "green",
+
+    evidence: [
+  "spoilers",
+  "repeat"
+    ],
 
     keywords: [
       "backseating",
