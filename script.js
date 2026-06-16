@@ -520,4 +520,54 @@ document.addEventListener("click", async (event) => {
     event.target.textContent = "Copy failed";
   }
 });
+function renderPositiveMoments() {
+  const positiveList = document.getElementById("positiveList");
+
+  if (!positiveList || typeof positiveMoments === "undefined") {
+    return;
+  }
+
+  positiveList.innerHTML = "";
+
+  positiveMoments.forEach((moment) => {
+    const btn = document.createElement("button");
+
+    btn.className = "incident-card border-green";
+
+    btn.innerHTML = `
+      <strong>${moment.title}</strong>
+      <small>${moment.category} • ${moment.priority} priority</small>
+    `;
+
+    btn.addEventListener("click", () => {
+      resultBox.className = "result-card";
+
+      resultBox.innerHTML = `
+        <span class="badge badge-green">
+          ${moment.category}
+        </span>
+
+        <h3>${moment.title}</h3>
+
+        <h4>Examples</h4>
+        <ul>${listItems(moment.examples)}</ul>
+
+        <h4>Suggested Actions</h4>
+        <ul>${listItems(moment.actions)}</ul>
+
+        <h4>Useful Command</h4>
+        <code>${moment.command}</code>
+        <button class="copy-btn" data-copy="${moment.command}">
+          Copy Command
+        </button>
+
+        <h4>Beginner Tip</h4>
+        <p>${moment.beginnerTip}</p>
+      `;
+    });
+
+    positiveList.appendChild(btn);
+  });
+}
 renderIncidentList();
+renderPositiveMoments();
