@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ModèDex</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>ModèDex</h1>
+    <p>Twitch Moderator Cheatsheet</p>
+
+    <div class="top-controls">
+      <input id="search" type="text" placeholder="Search incidents..." />
+      <button id="panicBtn">Panic Mode</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- LEFT PANEL -->
+    <section class="panel left">
+      <h2>Incident Types</h2>
+
+      <button class="incident-btn" data-incident="spam">Spam</button>
+      <button class="incident-btn" data-incident="harassment">Harassment</button>
+      <button class="incident-btn" data-incident="hate">Hate Speech</button>
+      <button class="incident-btn" data-incident="trauma">Trauma Dumping</button>
+      <button class="incident-btn" data-incident="raid">Bot Raid</button>
+      <button class="incident-btn" data-incident="doxxing">Doxxing</button>
+      <button class="incident-btn" data-incident="promo">Self Promo</button>
+    </section>
+
+    <!-- CENTER PANEL -->
+    <section class="panel center">
+      <h2>Decision Tree</h2>
+
+      <div class="question-box">
+        <h3>1. Is the message harmful?</h3>
+        <button class="decision" data-result="no">No</button>
+        <button class="decision" data-result="maybe">Maybe</button>
+        <button class="decision" data-result="yes">Yes</button>
+      </div>
+
+      <div class="question-box">
+        <h3>2. Severity</h3>
+        <input type="range" id="severity" min="1" max="4" value="1">
+        <p>Level: <span id="severityValue">1</span></p>
+      </div>
+
+      <button id="recommendBtn">Get Recommendation</button>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <section class="panel right">
+      <h2>Recommended Action</h2>
+      <div id="result">
+        Select an incident and evaluate severity.
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
