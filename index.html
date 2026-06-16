@@ -3,63 +3,144 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>ModèDex</title>
+
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <header>
-    <h1>ModèDex</h1>
-    <p>Twitch Moderator Cheatsheet</p>
+  <header class="app-header">
+    <div class="brand">
+      <h1>ModèDex</h1>
+      <p>Twitch Moderator Cheatsheet</p>
+    </div>
 
     <div class="top-controls">
-      <input id="search" type="text" placeholder="Search incidents..." />
-      <button id="panicBtn">Panic Mode</button>
+      <input
+        id="search"
+        type="text"
+        placeholder="Search spam, raid, doxxing, self promo..."
+      />
+
+      <button id="commandsBtn" class="secondary-btn">
+        Commands
+      </button>
+
+      <button id="panicBtn" class="panic-btn">
+        Panic Mode
+      </button>
     </div>
   </header>
 
-  <main>
-    <!-- LEFT PANEL -->
-    <section class="panel left">
+  <main class="layout">
+    <section class="panel left-panel">
       <h2>Incident Types</h2>
+      <p class="helper-text">
+        Pick a situation, or use search above.
+      </p>
 
-      <button class="incident-btn" data-incident="spam">Spam</button>
-      <button class="incident-btn" data-incident="harassment">Harassment</button>
-      <button class="incident-btn" data-incident="hate">Hate Speech</button>
-      <button class="incident-btn" data-incident="trauma">Trauma Dumping</button>
-      <button class="incident-btn" data-incident="raid">Bot Raid</button>
-      <button class="incident-btn" data-incident="doxxing">Doxxing</button>
-      <button class="incident-btn" data-incident="promo">Self Promo</button>
+      <div id="incidentList" class="incident-list"></div>
     </section>
 
-    <!-- CENTER PANEL -->
-    <section class="panel center">
+    <section class="panel center-panel">
       <h2>Decision Tree</h2>
 
       <div class="question-box">
         <h3>1. Is the message harmful?</h3>
-        <button class="decision" data-result="no">No</button>
-        <button class="decision" data-result="maybe">Maybe</button>
-        <button class="decision" data-result="yes">Yes</button>
+
+        <div class="button-row">
+          <button class="decision" data-result="no">No</button>
+          <button class="decision" data-result="maybe">Maybe</button>
+          <button class="decision" data-result="yes">Yes</button>
+        </div>
+
+        <p class="helper-text">
+          Beginner tip: “Maybe” is okay. Use context before escalating.
+        </p>
       </div>
 
       <div class="question-box">
         <h3>2. Severity</h3>
-        <input type="range" id="severity" min="1" max="4" value="1">
-        <p>Level: <span id="severityValue">1</span></p>
+
+        <input
+          type="range"
+          id="severity"
+          min="1"
+          max="4"
+          value="1"
+        />
+
+        <div class="severity-labels">
+          <span>1 Warn</span>
+          <span>2 Delete</span>
+          <span>3 Timeout</span>
+          <span>4 Ban</span>
+        </div>
+
+        <p>
+          Current level:
+          <strong id="severityValue">1</strong>
+        </p>
       </div>
 
-      <button id="recommendBtn">Get Recommendation</button>
+      <div class="question-box">
+        <h3>3. Context</h3>
+
+        <label>
+          <input type="checkbox" id="repeatOffense" />
+          Repeated offense
+        </label>
+
+        <label>
+          <input type="checkbox" id="newChatter" />
+          New or suspicious chatter
+        </label>
+
+        <label>
+          <input type="checkbox" id="streamerEscalation" />
+          Streamer/admin should be told
+        </label>
+      </div>
+
+      <button id="recommendBtn" class="primary-btn">
+        Get Recommendation
+      </button>
     </section>
 
-    <!-- RIGHT PANEL -->
-    <section class="panel right">
-      <h2>Recommended Action</h2>
-      <div id="result">
+    <section class="panel right-panel">
+      <h2>Recommendation</h2>
+
+      <div id="result" class="result-card">
         Select an incident and evaluate severity.
       </div>
     </section>
   </main>
 
+  <section id="commandsModal" class="modal hidden">
+    <div class="modal-card">
+      <button id="closeCommands" class="close-btn">×</button>
+
+      <h2>Quick Twitch Commands</h2>
+
+      <div class="command-grid">
+        <code>/delete &lt;message&gt;</code>
+        <code>/timeout username 600</code>
+        <code>/ban username</code>
+        <code>/unban username</code>
+        <code>/slow 10</code>
+        <code>/slowoff</code>
+        <code>/followers 10m</code>
+        <code>/followersoff</code>
+        <code>/emoteonly</code>
+        <code>/emoteonlyoff</code>
+        <code>/subscribers</code>
+        <code>/subscribersoff</code>
+      </div>
+    </div>
+  </section>
+
+  <script src="data.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
