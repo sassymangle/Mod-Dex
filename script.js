@@ -245,6 +245,9 @@ function showIncidentDetails(incident) {
 
     <h4>Useful Command</h4>
     <code>${incident.command}</code>
+    <button class="copy-btn" data-copy="${incident.command}">
+      Copy Command
+    </button>
 
     <h4>Beginner Tip</h4>
     <p>${incident.beginnerTip}</p>
@@ -438,6 +441,9 @@ document.getElementById("recommendBtn").addEventListener("click", () => {
 
     <h4>Suggested command/action</h4>
     <code>${command}</code>
+    <button class="copy-btn" data-copy="${command}">
+      Copy Command
+    </button>
 
     <h4>What to do</h4>
     <ul>${listItems(selectedIncident.actions)}</ul>
@@ -493,5 +499,25 @@ modal.addEventListener("click", (event) => {
     modal.classList.add("hidden");
   }
 });
+document.addEventListener("click", async (event) => {
+  if (!event.target.classList.contains("copy-btn")) {
+    return;
+  }
 
+  const textToCopy = event.target.dataset.copy;
+
+  try {
+    await navigator.clipboard.writeText(textToCopy);
+
+    event.target.textContent = "Copied!";
+    event.target.classList.add("copied");
+
+    setTimeout(() => {
+      event.target.textContent = "Copy Command";
+      event.target.classList.remove("copied");
+    }, 1500);
+  } catch (error) {
+    event.target.textContent = "Copy failed";
+  }
+});
 renderIncidentList();
